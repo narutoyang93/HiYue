@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -99,10 +100,7 @@ public class IconActivity extends EventBusActivity<RefreshUserIconEvent> {
                     case TYPE_UPLOAD_ICON://上传
                         if (new File(imgPath).exists()) {
                             DialogUtils.showProgressMaskLayer(IconActivity.this);
-                            Map<String, String> paramMap = new HashMap<>();
-                            paramMap.put("uploadType", "userIcon");
-                            paramMap.put("userId", MyApplication.getUser().getUserId());
-                            MyTools.uploadImage(960, 960, 200 * 1024, imgPath, NetWorkTasks.getActionUrl("uploadImage"), paramMap, new Callback() {
+                            MyTools.uploadImage(960, 960, 200 * 1024, imgPath, NetWorkTasks.getActionUrl("uploadFile"), new Callback() {
                                 @Override
                                 public void onFailure(Call call, IOException e) {
                                     runOnUiThread(new Runnable() {
@@ -140,7 +138,7 @@ public class IconActivity extends EventBusActivity<RefreshUserIconEvent> {
                                         }
                                     }
                                 }
-                            });
+                            }, new Pair<>("folder", "userIcon"), new Pair<>("userId", MyApplication.getUser().getUserId()));
                         }
                         break;
                 }

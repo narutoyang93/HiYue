@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.naruto.hiyue.MyApplication;
 import com.naruto.hiyue.R;
 import com.naruto.hiyue.base.BaseActivity;
 
@@ -18,8 +19,14 @@ public class WelcomeActivity extends BaseActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
-                WelcomeActivity.this.finish();
+                String userId = MyApplication.getSharedPreferences().getString("userId", "");
+                String password = MyApplication.getSharedPreferences().getString("password", "");
+                if (userId != null && !userId.isEmpty() && password != null && !password.isEmpty()) {
+                    LoginActivity.doLogin(WelcomeActivity.this, userId, password);
+                } else {
+                    startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
+                    WelcomeActivity.this.finish();
+                }
             }
         }, 3000);
     }

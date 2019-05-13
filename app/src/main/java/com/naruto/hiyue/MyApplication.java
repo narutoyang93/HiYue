@@ -2,10 +2,9 @@ package com.naruto.hiyue;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Environment;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.naruto.hiyue.been.UserInfo;
 
 /**
@@ -17,6 +16,7 @@ import com.naruto.hiyue.been.UserInfo;
 public class MyApplication extends Application {
     private static Context context;
     private static UserInfo user;
+    private static SharedPreferences sharedPreferences;
 
     //外置存储根目录
     public static final String EXTERNAL_STORAGE_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -27,7 +27,8 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
-        EXTERNAL_PRIVATE_STORAGE_ROOT=getExternalFilesDir(null).getPath();
+        EXTERNAL_PRIVATE_STORAGE_ROOT = getExternalFilesDir(null).getPath();
+        sharedPreferences = context.getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
     }
 
     public static Context getContext() {
@@ -40,5 +41,9 @@ public class MyApplication extends Application {
 
     public static void setUser(UserInfo user) {
         MyApplication.user = user;
+    }
+
+    public static SharedPreferences getSharedPreferences() {
+        return sharedPreferences;
     }
 }

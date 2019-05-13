@@ -1,5 +1,7 @@
 package com.naruto.hiyue;
 
+import android.util.Pair;
+
 import com.naruto.hiyue.utils.HttpUtil;
 
 import okhttp3.Callback;
@@ -24,6 +26,17 @@ public class NetWorkTasks {
 
     public static String getImgUrl(String imgName) {
         return WEB_SITE_URL + "/image/userIcon/" + imgName;
+    }
+
+    /**
+     * 登录
+     *
+     * @param userId
+     * @param password
+     * @param callBack
+     */
+    public static void login(String userId, String password, Callback callBack) {
+        HttpUtil.requestByPost(getActionUrl("login"), callBack, new Pair<>("userId", userId), new Pair<>("password", password));
     }
 
     /**

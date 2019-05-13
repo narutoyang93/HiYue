@@ -1,6 +1,5 @@
 package com.naruto.hiyue.fragment;
 
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -12,7 +11,7 @@ import com.naruto.hiyue.base.BaseRecyclerViewAdapter;
 import com.naruto.hiyue.base.MainFragment;
 import com.naruto.hiyue.been.DatingInfo;
 import com.naruto.hiyue.utils.DialogUtils;
-import com.naruto.hiyue.utils.HttpUtil;
+import com.naruto.hiyue.utils.MyTools;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,11 +46,11 @@ public class DatingFragment extends MainFragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String s = response.body().string();
-                List<DatingInfo> dataList = new Gson().fromJson(s, new TypeToken<List<DatingInfo>>() {
-                }.getType());
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        List<DatingInfo> dataList = new Gson().fromJson(s, new TypeToken<List<DatingInfo>>() {
+                        }.getType());
                         setAdapter(new BaseRecyclerViewAdapter<DatingInfo>(dataList) {
 
                             @Override
@@ -69,7 +68,7 @@ public class DatingFragment extends MainFragment {
                                 ImageView iv_icon = holder.getView(R.id.iv_icon);
                                 Glide.with(DatingFragment.this).load(NetWorkTasks.getImgUrl(data.getUserIcon())).placeholder(R.mipmap.ic_launcher).circleCrop().into(iv_icon);
                                 ImageView iv_sex = holder.getView(R.id.iv_sex);
-                                Glide.with(DatingFragment.this).load(data.getUserSex().equals("男") ? R.drawable.user_man_icon : R.drawable.user_women_icon).circleCrop().into(iv_sex);
+                                MyTools.setSexIcon(data.getUserSex(), iv_sex);
                             }
                         });
                         DialogUtils.dismissProgressDialog(getActivity());

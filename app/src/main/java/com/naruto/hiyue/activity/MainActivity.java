@@ -20,10 +20,12 @@ import com.naruto.hiyue.NetWorkTasks;
 import com.naruto.hiyue.R;
 import com.naruto.hiyue.adapter.MainActivityAdapter;
 import com.naruto.hiyue.base.EventBusActivity;
+import com.naruto.hiyue.been.UserInfo;
 import com.naruto.hiyue.eventBusEvent.RefreshUserIconEvent;
 import com.naruto.hiyue.fragment.DatingFragment;
 import com.naruto.hiyue.fragment.TestFragment;
 import com.naruto.hiyue.utils.GlideUtil;
+import com.naruto.hiyue.utils.MyTools;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -43,6 +45,11 @@ public class MainActivity extends EventBusActivity<RefreshUserIconEvent> {
     ViewPager viewPager;
     @BindView(R.id.iv_icon)
     ImageView iv_icon;
+    @BindView(R.id.tv_userName)
+    TextView tv_userName;
+    @BindView(R.id.iv_sex)
+    ImageView iv_sex;
+    private UserInfo userInfo;
     private final String[] titleArray = new String[]{"约会", "消息", "好友", "发现"};
     private SparseArray<TextView> tabTextViewMap = new SparseArray<>();
 
@@ -50,6 +57,8 @@ public class MainActivity extends EventBusActivity<RefreshUserIconEvent> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        userInfo = MyApplication.getUser();
+        //设置抽屉菜单
         drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
@@ -72,6 +81,11 @@ public class MainActivity extends EventBusActivity<RefreshUserIconEvent> {
             }
         });
 
+        GlideUtil.showUserIcon(iv_icon);
+        tv_userName.setText(userInfo.getUserName());
+        MyTools.setSexIcon(userInfo.getSex(), iv_sex);
+
+        //设置viewPager
         List<Fragment> fragmentList = new ArrayList<>();
         int[] iconArray = new int[]{R.drawable.selector_tab_date, R.drawable.selector_tab_message, R.drawable.selector_tab_friends, R.drawable.selector_tab_find};
         fragmentList.add(new DatingFragment());

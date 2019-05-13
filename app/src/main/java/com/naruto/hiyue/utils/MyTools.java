@@ -10,9 +10,10 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.util.Base64;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -21,13 +22,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.naruto.hiyue.MyApplication;
+import com.naruto.hiyue.R;
+import com.naruto.hiyue.fragment.DatingFragment;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import okhttp3.Callback;
 
@@ -145,10 +145,10 @@ public class MyTools {
      * @param maxSize   图片最大占用空间（单位：b）
      * @param imgPath   图片文件路径
      * @param webUrl    服务端链接
-     * @param paramMap  参数
      * @param callback  回调
+     * @param params    参数
      */
-    public static void uploadImage(int maxWidth, int maxHeight, int maxSize, String imgPath, String webUrl, Map<String, String> paramMap, Callback callback) {
+    public static void uploadImage(int maxWidth, int maxHeight, int maxSize, String imgPath, String webUrl, Callback callback, Pair<String, String>... params) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -183,27 +183,27 @@ public class MyTools {
                     Glide.with(MyApplication.getContext()).asBitmap().load(imgPath).override(maxWidth, maxHeight).into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                            compressAndUpload(suffix, resource, maxSize, webUrl, paramMap, callback);
+                            compressAndUpload(imgPath, resource, maxSize, webUrl, callback, params);
                         }
                     });
                 } else {
                     options.inJustDecodeBounds = false;
                     bitmap = BitmapFactory.decodeFile(imgPath, options);
-                    compressAndUpload(suffix, bitmap, maxSize, webUrl, paramMap, callback);
+                    compressAndUpload(imgPath, bitmap, maxSize, webUrl, callback, params);
                 }
             }
         }).start();
     }
 
     /**
-     * @param suffix
+     * @param fileName
      * @param bitmap
      * @param maxSize
      * @param webUrl
-     * @param paramMap
      * @param callback
+     * @param params
      */
-    public static void compressAndUpload(String suffix, Bitmap bitmap, int maxSize, String webUrl, Map<String, String> paramMap, Callback callback) {
+    public static void compressAndUpload(String fileName, Bitmap bitmap, int maxSize, String webUrl, Callback callback, Pair<String, String>... params) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         int quality = 105;
         int newSize = 0;
@@ -216,11 +216,7 @@ public class MyTools {
         } while (newSize > maxSize && quality > 0);
 
         bitmap.recycle();
-        // Base64图片转码为String
-        String encodedString = Base64.encodeToString(stream.toByteArray(), 0);
-        paramMap.put("image", encodedString);
-        paramMap.put("suffix", suffix);
-        HttpUtil.requestByPost(webUrl, paramMap, callback);
+        HttpUtil.uploadFile(webUrl, stream.toByteArray(), fileName, callback, params);
     }
 
 
@@ -235,6 +231,10 @@ public class MyTools {
             return bitmap.getByteCount();
         }
         return bitmap.getRowBytes() * bitmap.getHeight();                //earlier version
+    }
+
+    public static void setSexIcon(String sex, ImageView imageView){
+        Glide.with(MyApplication.getContext()).load(sex.equals("男") ? R.drawable.user_man_icon : R.drawable.user_women_icon).into(imageView);
     }
 
 }
